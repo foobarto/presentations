@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<title>Erlang &amp; Elixir</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link rel="stylesheet" href="css/reveal.min.css">
+	<link rel="stylesheet" href="css/theme/night.css" id="theme">
+	<link rel="stylesheet" href="css/theme/zenburn.css">
+	<link rel="stylesheet" href="css/highlight/zenburn.css">
+	<style>
+	.reveal strong {
+		color: #e7ad52;
+	}
+	.reveal pre code {
+		max-height: 800px;
+	}
+	
+	.text-note {
+		text-align: left;
+		font-size: 85%;
+
+	}
+	.side-by-side code {
+		font-size: 70%;
+	}
+
+	.side-by-side .left,
+	.side-by-side .right {
+		float: left;
+		padding-right: 1%;
+		width: 49%;
+		margin: 0px auto;
+	}
+
+	.side-by-side {
+		clear: both;
+	}
+
+	.clearfix {
+		clear: both;
+	}
+
+	.reveal pre code {
+		line-height: 1.5em;
+	}
+	</style>
+</head>
+
+<body>
+
+	<div class="reveal">
+
+		<div class="slides">
+
+			<!-- Intro -->
+			<section>
+				
+				<section>
+					<h2>Erlang &amp; Elixir</h2>
+					<p>by Bartosz Ptaszynski</p>
+				</section>
+
+				<section>
+					<h2>Who am I?</h2>
+					<p>Bartosz Ptaszynski - Senior Software Engineer @ <a href="">Fidelity Investments</a></p>
+					<p>Polyglot programmer and programming languages tourist</p>
+					<p><a href="http://twitter.com/foobarto">@foobarto</a> | <a href="mailto:bart@yazzgoth.com">bart@yazzgoth.com</a></p>
+				</section>
+			</section>
+
+			<section>
+				<section>
+					<h2>Before we start - Installation</h2>
+				</section>
+
+				<section>
+					<h3>Install Erlang</h3>
+					<p>Ubuntu</p>
+					<pre><code class='bash'>
+sudo apt-get install erlang
+					</code></pre>
+					<p>OS X</p>
+					<pre><code class='bash'>
+brew install erlang
+					</code></pre>
+				</section>
+				<section>
+					<h3>Install Elixir</h3>
+					<p>Ubuntu</p>
+					<pre><code class='bash'>
+cd ~
+git clone git://github.com/elixir-lang/elixir.git
+cd elixir
+git checkout v0.8.1
+make
+cat "$PATH=$PATH:$HOME/elixir/bin" >> ~/.zshrc
+					</code></pre>
+					<p>OS X</p>
+					<pre><code class='bash'>
+brew install elixir
+					</code></pre>
+				</section>
+				<section>
+					<h3>Install Rebar</h3>
+					<p>Erlang build tool, for erlang library dependencies</p>
+					<pre><code class='bash'>
+# Assumes ~/bin is in your path
+cd ~/bin
+wget http://cloud.github.com/downloads/basho/rebar/rebar
+chmod u+x rebar
+					</code></pre>
+				</section>
+			</section>
+
+			<!-- Erlang -->
+			<section>
+				<h2>What is Erlang?</h2>
+				<div class="fragment">
+					<blockquote>
+						a general-purpose programming language and runtime environment. Erlang has built-in support for concurrency, distribution and fault tolerance.
+					</blockquote>
+					<p class='attribution'><a href='http://www.erlang.org/faq/introduction.html'>erlang.org</a></p>
+				</div>
+				<div class="fragment">
+					<blockquote>Erlang is a concurrent language which is used to develop naturally clustered large scale applications. This is one of the only languages today that has been designed to get massive.</blockquote>
+					<p class='attribution'>Mickaël Rémond @ <a href="http://blog.process-one.net/web_20_shifting_from_get_fast_to_get_massive/">process-one.net</a></p>
+				</div>
+			</section>
+
+			<section>
+				<!-- do i want this? -->
+				<h2>Erlang's design decisions</h2>
+				<br/>
+				<p class="fragment">a <strong>functional</strong> language (no objects!)</p>
+				<p class="fragment">a language designed in 1986 to solve specific telecom challenges</p>
+				<p class="fragment">ideal for implementing applications that require <strong>high concurrency</strong></p>
+				<p class="fragment">ideal for implementing <strong>highly available/fault tolerant systems</strong></p>
+				<p class="fragment">great for writing <strong>distributed</strong> applications (on Erlang clusters)</p>
+				<p class="fragment">has to "run forever" - hot code swapping, hot upgrades, high availability, process supervisors with failure handling and recovery policies</p>
+			</section>
+
+			<section>
+				<h2>Fault tolerant means at least two servers</h2>
+				<p>Hardware fails, don't depend that it does not</p>
+			</section>
+			<section>
+				<h2>Fault tolerant means <strong>your</strong> application can fail too!</h2>
+				<p class="fragment"><strong>Failures WILL happen</strong>, design to handle them</p>
+				<p class="fragment">Limit the blast radius of potential failures by design</p>
+				<p class="fragment">Erlang comes with <strong>OTP framework</strong> to help you do that and more!</p>
+			</section>
+			<section>
+				<section>
+					<h2>Prepare for lightspeed</h2>
+					<img src="img/hyperspace_falcon.png" alt="hyperspace"/>
+					<p>I'll fly thgough this part so don't worry if you don't catch everything</p>
+				</section>
+
+				<section>
+					<h2>Erlang is <strong>functional</strong></h2>
+				</section>
+
+				<section>
+					<p class="fragment">Periods . end everything except when</p>
+					<p class="fragment">Semicolons ; end clauses</p>
+					<p class="fragment">and Commas , separate expressions</p>
+				</section>
+
+				<section>
+					<h2>Functions and pattern matching</h2>
+					<pre><code class="erlang" data-noescape><span class="fragment">
+calculate_area({square, Size}) ->
+	Size * Size;
+</span><span class="fragment">
+calculate_area({rect, A, A}) ->
+	calculate_area({square, A});
+</span><span class="fragment">
+calculate_area({rect, A, B}) when is_integer(A), is_integer(B) ->
+	A * B;
+</span><span class="fragment">
+calculate_area({circle, Radius}) Radius > 0, is_integer(Radius) ->
+	Pi = 3.14,
+	Pi * Radius * Radius;
+</span><span class="fragment">
+calculate_area(_Unknown) ->
+	unknown.
+</span>
+					</code></pre>
+				</section>	
+
+				<section>
+					<h2>Anonymous functions</h2>
+					<pre><code class="erlang" data-noescape><span class="fragment">
+lists:map(fun(X) -> X * X end, List).
+</span><span class="fragment">
+% or
+
+F = fun(X) ->
+	X * X
+end.
+
+lists:map(F, List).
+					</span></code></pre>
+				</section>
+
+				<section>
+					<h2>Variables, pattern matching and assignment</h2>
+					<pre><code class="erlang" data-noescape>~> erl
+Erlang R16B01 (erts-5.10.2) [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+Eshell V5.10.2  (abort with ^G)
+1> <span class="fragment">A = 1.   % variables must start with capital letter
+1
+2> </span><span class="fragment">B = (2 * A) + 3.    
+5
+3> </span><span class="fragment">B = 3.    % once assigned, they cannot change!
+** exception error: no match of right hand side value 3
+4> </span><span class="fragment">Coords = {10, 20, 30}.
+{10,20,30}
+5> </span><span class="fragment">{X1, Y1, Z1} = Coords.
+{10,20,30}
+6> </span><span class="fragment">X1.
+10
+7></span>
+					</code></pre>
+				</section>
+				
+				<section>
+					<h2>Numbers</h2>
+					<p>As large as memory permits</p>
+					<pre><code class="erlang" data-noescape>1> <span class="fragment">1 + 1.
+2
+2> </span><span class="fragment">1 + 2.0.
+3.0
+3> </span><span class="fragment">1/2.
+0.5
+4> </span><span class="fragment">0 == 0.0.    % '==' means 'is like'
+true
+5> </span><span class="fragment">1 =:= 1.0.   %  '=:=' means 'exactly as'
+false
+6> </span><span class="fragment">0 = 0.
+0
+7></span>
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>(Linked) Lists</h2>
+					<pre><code class="erlang" data-noescape>1> <span class="fragment">List = [1, 2, 3].
+[1,2,3]
+2> </span><span class="fragment">[Head | Tail] = List.
+[1,2,3]
+3> </span><span class="fragment">Head.
+1
+4> </span><span class="fragment">Tail.
+[2,3]
+5> </span><span class="fragment">lists:nth(2, List).
+2
+6> </span><span class="fragment">lists:sort(List).
+[1,2,3]
+7> </span><span class="fragment">lists:member(1, List).
+true
+8> </span><span class="fragment">List ++ [4,5].
+[1,2,3,4,5]
+9> </span><span class="fragment">[0 | List].
+[0,1,2,3]
+10> [</span><span class="fragment">1, 2, 3, {numbers,[4,5,6]}, 5.34, atom].
+[1, 2, 3, {numbers,[4,5,6]}, 5.34, atom]</span>
+					</code></pre>
+				</section>
+				<section>
+					<h2>List comperhension</h2>
+					<pre><code class="erlang" data-noescape>1><span class="fragment">[2*N || N <- [1,2,3,4]].   % list comperhension!
+[2,4,6,8]
+2> </span><span class="fragment">[X || X <- [1,2,3,4,5,6,7,8,9,10], X rem 2 =:= 0].
+[2,4,6,8,10]
+3> </span><span class="fragment">[X+Y || X <- [1,2], Y <- [2,3]].
+[3,4,4,5]
+4> </span><span class="fragment">Weather = [{toronto, rain}, {montreal, storms}, {london, fog},  
+4>            {paris, sun}, {boston, fog}, {vancouver, snow}].
+[{toronto,rain},
+{montreal,storms},
+{london,fog},
+{paris,sun},
+{boston,fog},
+{vancouver,snow}]
+5> </span><span class="fragment">FoggyPlaces = [X || {X, fog} <- Weather].
+[london,boston]</span>
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Strings</h2>
+					<pre><code class="erlang" data-noescape>1> <span class="fragment">MyStr = "abcd".
+"abcd"
+2> </span><span class="fragment">MyStr = [97, 98, 99, 100].  % wait.. what?!
+"abcd"
+3> </span><span class="fragment">lists:sort("dcba").  % because they are lists we can do things like this
+"abcd"
+4> </span>
+					</code></pre>
+					<p class="fragment">Strings are just lists</p>
+				</section>
+
+				<section>	
+					<h2>Binaries and Bit Syntax</h2>
+					<pre><code class="fragment" data-noescape>
+1> <span class="fragment">Color = 16#F09A29.
+15768105
+2> </span><span class="fragment">Pixel = << Color:24 >>.
+<< 240,154,41 >>
+3> </span><span class="fragment">Pixels = << 213,45,132,64,76,32,76,0,0,234,32,15 >>.
+<< 213,45,132,64,76,32,76,0,0,234,32,15 >>
+4> </span><span class="fragment"><< Pix1,Pix2,Pix3,Pix4 >> = Pixels.
+** exception error: no match of right hand side value << 213,45,132,64,76,32,76,
+0,0,234,32,15 >>
+5> </span><span class="fragment"><< Pix1:24, Pix2:24, Pix3:24, Pix4:24 >> = Pixels.
+<< 213,45,132,64,76,32,76,0,0,234,32,15 >>
+6> </span><span class="fragment"><< R:8, G:8, B:8 >> = << Pix1:24 >>.
+<< 213,45,132 >>
+7> </span><span class="fragment">R.
+213
+8> </span><span class="fragment"><< R:8, Rest/binary >> = Pixels.
+<< 213,45,132,64,76,32,76,0,0,234,32,15 >>
+9> </span><span class="fragment">R.
+213
+10> </span><span class="fragment"><< SourcePort:16, DestinationPort:16,
+AckNumber:32,
+DataOffset:4, _Reserved:4, Flags:8, WindowSize:16,
+CheckSum: 16, UrgentPointer:16,
+Payload/binary >> = SomePacket.</span>
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Binaries and Bit Syntax contd.</h2>
+					<p>Value</p>
+					<p>Value:Size</p>
+					<p>Value/TypeSpecifierList</p>
+					<p>Value:Size/TypeSpecifierList</p>
+				</section>
+
+				<section>
+					<h2>Binary comperhension</h2>
+					<pre><code class="erlang" data-noescape>
+1> <span class="fragment">[ X || << X >> <= << 1,2,3,4,5 >>, X rem 2 == 0].    
+[2,4]
+2> </span><span class="fragment">Pixels = << 213,45,132,64,76,32,76,0,0,234,32,15 >>.
+<< 213,45,132,64,76,32,76,0,0,234,32,15 >>
+3> </span><span class="fragment">RGB = [ {R,G,B} || << R:8,G:8,B:8 >> <= Pixels ].
+[{213,45,132},{64,76,32},{76,0,0},{234,32,15}]
+4> </span><span class="fragment"><< << R:8, G:8, B:8 >> ||  {R,G,B} <- RGB >>.
+<< 213,45,132,64,76,32,76,0,0,234,32,15 >>
+</span>
+					</code></pre>
+				</section>
+				<section>
+					<h2>Atoms</h2>
+					<p>Similar to Ruby symbols, used to represent non-numerical constants, ie. true, ok, blah, error</p>
+					<pre><code class="erlang" data-noescape>
+1> ok.
+ok
+2> error.
+error
+3> true.
+true
+4> A = false.
+false
+5> A.
+false
+6> {ok, "success"}.
+{ok,"success"}
+7>
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Tuples</h2>
+					<p>Fixed length collection of items</p>
+					<pre><code class="erlang" data-noescape>
+1> <span class="fragment">X = 10, Y = 4.
+4
+2> </span><span class="fragment">Point = {X,Y}.
+{10,4}
+3> </span><span class="fragment">Point = {4,5}.
+{4,5}
+4> </span><span class="fragment">{X,Y} = Point.
+{4,5}
+5> </span><span class="fragment">X.
+4
+6> </span><span class="fragment">{X,_} = Point.
+{4,5}
+7> </span><span class="fragment">{_,_} = {4,5}.
+{4,5}
+8> </span><span class="fragment">{_,_} = {4,5,6}.
+** exception error: no match of right hand side value {4,5,6}
+9> </span><span class="fragment">{point, {X,Y}}.
+{point,{4,5}}
+</span>					</code></pre>
+				</section>
+
+				<section>
+					<h2>Proplists, Dicts, etc.</h2>
+				</section>
+
+				<section>
+					<h2>Modules</h2>
+					<pre class="left">useless.erl</pre>
+
+					<pre><code class="erlang" data-noescape>
+-module(useless). <span class="fragment"> % module declaration, has to match the name of the file</span>
+-export([add/2, hello/0, hello/1, greet_and_add_two/1]).<span class="fragment">  % declare which functions to export
+% this is a list of function names and their arity (number of arguments)</span>
+ 
+add(A, B) ->
+	A + B.
+ 
+<span class="fragment">%% Shows greetings.
+%% io:format/1 is the standard function used to output text.</span>
+hello() ->
+	io:format("Hello, world!~n"). <span class="fragment"> % this is the only definition of hello/0 so we finish it with a dot</span>
+
+hello({name, Name}) ->
+	io:format("Hello there, ~n!", [Name]);   <span class="fragment"> % we are not finished yet with defining hello/1</span>
+
+hello(Other) ->
+	io:format("Hey, ~n whatever you are!", [Other]). <span class="fragment"> % this is last definition of hello/1</span>
+ 
+greet_and_add_two(X) ->
+	hello(),
+	hello({name, "Bob"}),
+	hello("Thing"),
+	add(X, 2).
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Conditionals</h2>
+					<pre><code class="erlang" data-noescape><span class="fragment">
+if
+	A == 5 ->
+		do_something();
+	true ->  % practically 'else'
+		do_something_else();
+end.
+</span><span class="fragment">
+% 'if' statement is weird and not very popular in Erlang
+% developers prefer using 'case' statement
+</span><span class="fragment">
+case Expression of <span class="fragment">
+	{run_command, Cmd} ->
+		do_something(Cmd);</span><span class="fragment">
+	_ ->  % anything starting with underscore means 'ignore this' or 'anything'
+		ok</span>
+end.
+					</span></code></pre>
+				</section>
+
+				<section>
+					<h2>Looping</h2>
+					<pre><code class="erlang" data-noescape>
+print_each([]) ->  
+	ok;
+
+print_each([H|T]) ->
+	io:format("~p~n", [H]),
+	print_each(T).   % tail recursion is safe - does not build up stack
+					</code></pre>
+				</section>
+				<section>
+					<h2>Spawning new process</h2>
+					<pre><code class="erlang" data-noescape>
+F = fun() ->
+  io:format("Hi")
+end.
+
+Pid = spawn(F).
+						</code></pre>
+						or
+						<pre><code class="erlang" data-noescape>
+Pid = spawn(io, format, ["Hi"]).
+						</code></pre>
+				</section>
+
+				<section>
+						<h2>Message passing</h2>
+						<div class="side-by-side">
+							<div class="left">
+								<pre><code class="erlang" data-noescape>Pid ! Message.
+
+Pid ! {run_command, shutdown}.
+
+Pid ! 42.
+
+
+								</code></pre>
+							</div>
+							<div class="right fragment">
+								<pre><code class="erlang" data-noescape>receive
+	{run_command, Cmd} ->
+		io:format("Running command ~p~n", [Cmd]);
+	Data when is_integer(Data) ->
+		io:format("Got a number ~p~n", [Data]);
+	Data ->
+		io:format("Got something ~p~n", [Data])
+end.
+</code></pre>
+							</div>
+						</div>
+						<span class="fragment"><strong>Pid</strong> can exist on <strong>any node</strong> (server) of Erlang cluster!</span>
+				</section>
+
+				<section>
+					<h2>Records</h2>
+					<div class="side-by-side">
+					
+					<pre class="left"><code class="erlang" data-noescape>-module(records).
+-compile(export_all).  % export all functions
+ 
+-record(robot, {name,
+		type=industrial,
+		hobbies,
+		details=[]}).
+
+first_robot() ->
+	#robot{name="Mechatron",
+		type=handmade,
+		details=["Moved by a small man inside"]}.
+<span class="fragment" data-fragment-index=5>
+car_factory(CorpName) ->
+	#robot{name=CorpName, hobbies="building cars"}.
+
+</span></code></pre>
+					<pre class="right"><code class="erlang" data-noescape>1> <span class="fragment" data-fragment-index=1>c(records).
+{ok,records}
+2> </span><span class="fragment" data-fragment-index=2>records:first_robot().
+{robot,"Mechatron",handmade,undefined,
+["Moved by a small man inside"]}
+3> </span><span class="fragment" data-fragment-index=3>rr(records).
+[robot]
+4> </span><span class="fragment" data-fragment-index=4>4records:first_robot().        
+#robot{name = "Mechatron",type = handmade,
+hobbies = undefined,
+details = ["Moved by a small man inside"]}
+5> </span><span class="fragment" data-fragment-index=6>c(records).
+{ok,records}
+6> </span><span class="fragment" data-fragment-index=7>records:car_factory("Jokeswagen").
+#robot{name = "Jokeswagen",type = industrial,
+hobbies = "building cars",details = []}</span></code></pre>
+					</div>
+				</section>
+			</section>
+				<!-- Erlang Chat Server -->
+				<section>
+			
+					<section>
+						<h2>Let's implement a Chat Server</h2>
+						<p></p>
+					</section>
+					<section>
+						<pre class="left">my_server.erl</pre>
+						<pre><code class="erlang" data-noescape><span class="fragment">
+-module(my_server).
+-export([listen/2, echo_server/1]).
+</span><span class="fragment">
+% defining TCP_OPTIONS macro
+-define(TCP_OPTIONS, [binary, {packet, 0}, {active, false}, {reuseaddr, true}]).
+</span><span class="fragment">
+% Call echo:listen(Port, my_server:echo_server) to start the service.
+listen(Port, Handler) ->
+    {ok, LSocket} = gen_tcp:listen(Port, ?TCP_OPTIONS),
+    accept(LSocket, Handler).
+</span><span class="fragment">
+% Wait for incoming connections and spawn the echo loop when we get one.
+accept(LSocket, Handler) -></span><span class="fragment">
+    {ok, Socket} = gen_tcp:accept(LSocket),</span><span class="fragment">
+    spawn(fun() -> Handler(Socket) end),</span><span class="fragment">
+    accept(LSocket).</span><span class="fragment">
+
+% Echo back whatever data we receive on Socket.
+echo_server(Socket) ->
+    case gen_tcp:recv(Socket, 0) of
+        {ok, Data} ->
+            gen_tcp:send(Socket, Data),
+            loop(Socket);
+        {error, closed} ->
+            ok
+    end.</span>
+						</code></pre>
+					</section>
+					<section>
+						<div class="side-by-side">
+							<pre class="left">Erlang</pre><pre class="right">Shell</pre>
+							<pre class="left"><code class="erlang" data-noescape>
+
+							</code></pre>
+							<pre class="right"><code data-noescape>
+
+							</code></pre>
+						</div>	
+					</section>
+				</section>	
+			
+
+			<!-- Elixir -->
+			<section>
+				<h2>What is Elixir?</h2>
+				<div class="fragment">
+					<blockquote>
+						Elixir is a functional meta-programming aware language built on top of the Erlang VM. It is a dynamic language with flexible syntax with macros support that leverages Erlang's abilities to build concurrent, distributed, fault-tolerant applications with hot code upgrades.
+					</blockquote>
+					<p class='attribution'>Jose Valim @ <a href='http://elixir-lang.com'>elixir-lang.com</a></p>
+				</div>
+			</section>
+
+			<section>
+				<section>
+					<h2>Influences</h2>
+				</section>
+
+				<section>
+					<h3>Erlang</h3>
+					<ul>
+						<li>Compiles to Erlang Bytecode</li>
+						<li>Actor Model</li>
+						<li>Message Passing, OTP</li>
+						<li>Pattern matching</li>
+						<li>Guards</li>
+						<li>Hot code swapping</li>
+					</ul>
+					<aside class='notes'>
+						Does not compile to Erlang - ala CoffeScript<br>
+						Compiles to bytecode, ala Clojure
+					</aside>
+				</section>
+
+				<section>
+					<h3>Ruby</h3>
+					<ul>
+						<li>Syntax</li>
+						<li>Dependency management</li>
+					</ul>
+					<aside class='notes'>
+						Jose Valim - Rails core contributor
+					</aside>
+				</section>
+
+				<section>
+					<h3>Clojure/Lisp</h3>
+					<ul>
+						<li>Macros</li>
+						<li>Leiningen build tool</li>
+						<li>Protocols</li>
+						<li>Includes/Imports/Refers</li>
+					</ul>
+					<aside class='notes'>
+						not going to get into macros, protocols, etc - Check out the documentation.
+					</aside>
+				</section>
+			</section>
+
+			<section>
+				<section>
+					<h2>Elixir at a glance</h2>
+				</section>
+
+				<section>
+					<h2>Numbers</h2>
+				</section>
+
+				<section>
+					<h2>Lists</h2>
+				</section>
+
+				<section>
+					<h2>Strings</h2>
+				</section>
+
+				<section>
+					<h2>Atoms</h2>
+				</section>
+
+				<section>
+					<h2>Tuples</h2>
+				</section>
+
+				<section>
+					<h2>Keyword lists</h2>
+				</section>
+			</section>
+
+			<!-- Elixir Chat Server -->
+			<section>
+				<section>
+					<h2>Elixir Chat Server</h2>
+				</section>
+			</section>
+
+
+			<!-- OTP -->
+			<section>
+				<section>
+					<h2>Oh, the OTP</h2>
+					<p>Framework that makes all the difference</p>
+				</section>
+				<section>
+					<h2>What is OTP?</h2>
+				</section>
+				<section>
+					<section>
+						<h2>OTP in Erlang</h2>
+					</section>	
+				</section>
+				<section>
+					<section>
+						<h2>OTP in Elixir</h2>
+					</section>
+				</section>
+
+			</section>
+
+			
+			<!-- Tools -->
+			<section>
+				<section>
+					<h2>Testing</h2>
+				</section>
+				<section>
+					<h2>Building</h2>
+				</section>
+			</section>
+
+			<!-- What is erlang good for? Who is using it? -->
+			<section>
+				<h2>Who is using Erlang?</h2>
+			</section>	
+
+			<!-- Brief look at other tools (dialyzer, zotonic, wrangler, meck, proper, cover, ChicagoBoss, Cowboy -->
+
+			<!-- Links -->
+			<section>
+				<h2>Links</h2>
+				<p>erlang</p>
+				<p>elixir</p>
+				<p>Learn You Some Erlang</p>
+
+			</section>
+
+			<section>
+				<h2>Things I didn't talk about</h2>
+				<p>ETS/DETS</p>
+				<p>Mnesia</p>
+			</section>
+
+			<!-- Thanks -->
+			<section>
+				<h2>Questions?</h2>
+				<p>Thanks!</p>
+				<p></p>
+				<p>Bart Ptaszynski <a href="http://twitter.com/foobarto">@foobarto</a> | <a href="mailto:bart@yazzgoth.com">bart@yazzgoth.com</a></p>
+			</section>
+		</div>
+
+	</div>
+
+	<script src="js/head.min.js"></script>
+	<script src="js/highlight.js"></script>
+	<script src="js/reveal.min.js"></script>
+	<script src="js/notes.js"></script>
+
+	<script type="text/javascript">
+
+		Reveal.initialize({
+			width: '90%',
+			height: '100%',
+	      	//center: true,
+	      	progress: true,
+	      	history: true,
+	      	transition: 'linear',
+	      	dependencies: [
+		      	{ src: 'js/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+	    	  	{ src: 'js/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+	      	]
+	      });
+
+	</script>
+
+</body>
+</html>

@@ -155,7 +155,13 @@ chmod u+x rebar
       </section>
       <section>
         <h2>Erlang is</h2>
-        <p>Byte compiled to BEAM and run on ErlangVM (EVM), similar to Java code on JVM</p>
+        <ul>
+        <li class="fragment">byte compiled to BEAM and run on ErlangVM (EVM), similar to Java code on JVM</li>
+        <li class="fragment">using all the cores on the machine it runs</li>
+        <li class="fragment">capable of running applications seamlessly across (up to hundreds of) physical servers</li>
+        <li class="fragment">preemptively scheduling between Erlang's micro-processes (no need to yield etc.) each process gets a share of CPU time</li>
+        <li class="fragment">around for 25+ years - very mature, industry proven, comes with lots of tools and frameworks</li>
+        </ul>
       </section>
       <section>
         <section>
@@ -177,43 +183,6 @@ chmod u+x rebar
 
         <section>
           <img src="img/raised_eyebrow.png"/>
-        </section>
-
-        <section>
-          <h2>Functions and pattern matching</h2>
-          <pre><code class="erlang" data-noescape><span class="fragment">
-calculate_area({square, Size}) ->
-  Size * Size;
-</span><span class="fragment">
-calculate_area({rect, A, A}) ->
-  calculate_area({square, A});
-</span><span class="fragment">
-calculate_area({rect, A, B}) when is_integer(A), is_integer(B) ->
-  A * B;
-</span><span class="fragment">
-calculate_area({circle, Radius}) Radius > 0, is_integer(Radius) ->
-  Pi = 3.14,
-  Pi * Radius * Radius;
-</span><span class="fragment">
-calculate_area(_Unknown) ->
-  unknown.
-</span>
-          </code></pre>
-        </section>  
-
-        <section>
-          <h2>Anonymous functions</h2>
-          <pre><code class="erlang" data-noescape><span class="fragment">
-lists:map(fun(X) -> X * X end, List).
-</span><span class="fragment">
-% or
-
-F = fun(X) ->
-  X * X
-end.
-
-lists:map(F, List).
-          </span></code></pre>
         </section>
 
         <section>
@@ -414,6 +383,43 @@ false
 
         <section>
           <h2>Proplists, Dicts, etc.</h2>
+        </section>
+
+        <section>
+          <h2>Functions and pattern matching</h2>
+          <pre><code class="erlang" data-noescape><span class="fragment">
+calculate_area({square, Size}) ->
+  Size * Size;
+</span><span class="fragment">
+calculate_area({rect, A, A}) ->
+  calculate_area({square, A});
+</span><span class="fragment">
+calculate_area({rect, A, B}) when is_integer(A), is_integer(B) ->
+  A * B;
+</span><span class="fragment">
+calculate_area({circle, Radius}) Radius > 0, is_integer(Radius) ->
+  Pi = 3.14,
+  Pi * Radius * Radius;
+</span><span class="fragment">
+calculate_area(_Unknown) ->
+  unknown.
+</span>
+          </code></pre>
+        </section>  
+
+        <section>
+          <h2>Anonymous functions</h2>
+          <pre><code class="erlang" data-noescape><span class="fragment">
+lists:map(fun(X) -> X * X end, List).
+</span><span class="fragment">
+% or
+
+F = fun(X) ->
+  X * X
+end.
+
+lists:map(F, List).
+          </span></code></pre>
         </section>
 
         <section>

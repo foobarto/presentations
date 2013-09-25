@@ -573,82 +573,63 @@ hobbies = "building cars",details = []}</span></code></pre>
 						<pre class="left">my_server.erl</pre>
 						<div class="side-by-side">
 						<pre class="left"><code class="erlang" data-noescape><span class="fragment">-module(my_server).
--export([listen/2, echo_server/1]).
-</span><span class="fragment">
-% defining TCP_OPTIONS macro
+-export([listen/2, echo_server/1]).</span><span class="fragment">
+
 -define(TCP_OPTIONS, [binary, {packet, 0}, 
-		{active, false}, {reuseaddr, true}]).
-</span><span class="fragment">
+		{active, false}, {reuseaddr, true}]).</span><span class="fragment">
+
 start_registry() ->
 	register(socket_mgr, self()),
-	sync_registry(nodes()),
-	registry([]).
-</span><span class="fragment">
-sync_nodes([]) -> ok;
-sync_nodes([Node|Nodes]) -> 
-	{socket_mgr, Node} ! {get_sockets, self()},
-	sync_nodes(Nodes).
-</span><span class="fragment">
-registry(Sockets) ->
-	receive
-		{connected, Pid, Socket} -></span><span class="fragment">
-			erlang:monitor(process, Pid),</span><span class="fragment">
-			notify_other_nodes(Pid, Socket),</span><span class="fragment">
-			registry([{Pid, Socket}|Sockets]);</span><span class="fragment">
-		{'DOWN', _Ref, process, DeadPid, _Reason} -></span><span class="fragment">
-			registry(proplists:delete(DeadPid, Sockets));</span><span class="fragment">
-		{get_sockets, Requester} -></span><span class="fragment">
-			Requester ! {sockets, Sockets},</span><span class="fragment">
-			registry(Sockets);</span><span class="fragment">
-		{sockets, RemoteSockets} ->
-			NewSockets = sets:to_list(sets:union(
-				sets:from_list(Sockets), sets:from_list(RemoteSockets)
-			)),
-			registry(NewSockets);
-		_ -> registry(Sockets)
-	end.</span><span class="fragment">
+	registry([]). </span><span class="fragment">
 
-notify_other_nodes(Pid, Socket) ->
-	notify_other_nodes(Pid, Socket, nodes()).
+registry(Sockets) -> 
+	receive
+		{connected, Pid, Socket} -> </span><span class="fragment">
+			erlang:monitor(process, Pid), </span><span class="fragment">
+			registry([{Pid, Socket}|Sockets]); </span><span class="fragment">
+		{'DOWN', _Ref, process, DeadPid, _Reason} -> 
+			registry(proplists:delete(DeadPid, Sockets)); </span><span class="fragment">
+		{send, Msg} -> </span><span class="fragment">
+			lists:map(
+				fun({_Pid, Socket}) -> 
+					gen_tcp:send(Socket, Msg) 
+				end,
+				Sockets),</span><span class="fragment">
+			registry(Sockets);</span><span class="fragment">
+		_ -> registry(Sockets)
+	end.
+
+
 </span></code></pre>
 <pre class="right"><code class="erlang" data-noescape><span class="fragment">
-notify_other_nodes(_, _, []) ->
-	ok;
+send(Msg) ->
+	lists:map(
+		fun(Node) -> 
+			{socket_mgr, Node} ! {send, Msg} 
+		end, 
+		nodes()).</span><span class="fragment">
 
-notify_other_nodes(Pid, Socket, [Node|Nodes]) ->
-	{socket_mgr, Node} ! {connected, Pid, Socket}.
-</span><span class="fragment">
-send_to_sockets(Msg) -></span><span class="fragment">
-	socket_mgr ! {get_sockets, self()},</span><span class="fragment">
-	receive
-		{sockets, Sockets} -></span><span class="fragment">
-			lists:map(fun({_Pid, Socket}) -> 
-				gen_tcp:send(Socket, Msg) end,
-				Sockets),</span><span class="fragment">
-			ok;</span><span class="fragment">
-		Stuff -> {unknown, Stuff}</span><span class="fragment">
-	after 2000 -> timeout
-	end.</span><span class="fragment">
+listen(Port, Handler) ->
+    {ok, LSocket} = gen_tcp:listen(Port, ?TCP_OPTIONS), </span><span class="fragment">
+    spawn(fun() -> start_registry() end), </span><span class="fragment">
+    accept(LSocket, Handler). </span><span class="fragment">
 
-listen(Port, Handler) -></span><span class="fragment">
-    {ok, LSocket} = gen_tcp:listen(Port, ?TCP_OPTIONS),</span><span class="fragment">
-    spawn(fun() -> start_registry() end),
-    accept(LSocket, Handler).
-</span><span class="fragment">
-accept(LSocket, Handler) -></span><span class="fragment">
-    {ok, Socket} = gen_tcp:accept(LSocket),</span><span class="fragment">
-    spawn(fun() -> Handler(Socket) end),</span><span class="fragment">
-    accept(LSocket).</span><span class="fragment">
+accept(LSocket, Handler) ->
+    {ok, Socket} = gen_tcp:accept(LSocket), </span><span class="fragment">
+    Pid = spawn(fun() -> Handler(Socket) end), </span><span class="fragment">
+    socket_mgr ! {connected, Pid, Socket},</span><span class="fragment">
+    accept(LSocket, Handler).</span><span class="fragment">
 
 echo_server(Socket) -></span><span class="fragment">
     case gen_tcp:recv(Socket, 0) of
         {ok, Data} -></span><span class="fragment">
-            send_to_sockets(Data),
-            loop(Socket);</span><span class="fragment">
-        {error, closed} ->
-            ok
+            send(Data),
+            echo_server(Socket);</span><span class="fragment">
+        {error, closed} -> ok
     end.</span><span class="fragment">
-% savvy?</span></code></pre></div>
+% savvy?
+
+</span></code></pre></div>
 					</section>
 					<section>
 						<img src="img/shocked.png" />

@@ -176,6 +176,10 @@ chmod u+x rebar
         </section>
 
         <section>
+          <img src="img/raised_eyebrow.png"/>
+        </section>
+
+        <section>
           <h2>Functions and pattern matching</h2>
           <pre><code class="erlang" data-noescape><span class="fragment">
 calculate_area({square, Size}) ->
@@ -293,7 +297,7 @@ true
 {paris,sun},
 {boston,fog},
 {vancouver,snow}]
-5> </span><span class="fragment">FoggyPlaces = [X || {X, fog} <- Weather].
+5> </span><span class="fragment">FoggyPlaces = [X || {X, fog} <- Weather].  % pattern matching in list comperhension!
 [london,boston]</span>
           </code></pre>
         </section>

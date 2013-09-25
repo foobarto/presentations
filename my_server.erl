@@ -1,5 +1,5 @@
 -module(my_server).
--export([listen/2, echo_server/1]).
+-export([listen/2, simple_server/1]).
 
 % defining TCP_OPTIONS macro
 -define(TCP_OPTIONS, [binary, {packet, 0}, 
@@ -30,7 +30,7 @@ registry(Sockets) ->
 
 send_to_sockets(Msg) ->
 	io:format("Sending Msg ~p~n", [Msg]),
-	lists:map(fun(Node) -> {socket_mgr, Node} ! {send, Msg} end, nodes()).
+	lists:map(fun(Node) -> {socket_mgr, Node} ! {send, Msg} end, [node() | nodes()]).
 
 listen(Port, Handler) ->
     {ok, LSocket} = gen_tcp:listen(Port, ?TCP_OPTIONS),
@@ -45,13 +45,13 @@ accept(LSocket, Handler) ->
     socket_mgr ! {connected, Pid, Socket},
     accept(LSocket, Handler).
 
-echo_server(Socket) ->
+simple_server(Socket) ->
 	io:format("echo server started~n"),
     case gen_tcp:recv(Socket, 0) of
         {ok, Data} ->
         	io:format("Data received ~p~n", [Data]),
             send_to_sockets(Data),
-            echo_server(Socket);
+            simple_server(Socket);
         {error, closed} ->
         	io:format("echo connection closed"),
             ok

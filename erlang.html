@@ -573,7 +573,7 @@ hobbies = "building cars",details = []}</span></code></pre>
             <pre class="left">my_server.erl</pre>
             <div class="side-by-side">
             <pre class="left"><code class="erlang" data-noescape><span class="fragment">-module(my_server).
--export([listen/2, echo_server/1]).</span><span class="fragment">
+-export([listen/2, simple_server/1]).</span><span class="fragment">
 
 -define(TCP_OPTIONS, [binary, {packet, 0}, 
   {active, false}, {reuseaddr, true}]).</span><span class="fragment">
@@ -604,7 +604,7 @@ registry(Sockets) ->
 send(Msg) ->
   lists:map(
     fun(Node) -> {socket_mgr, Node} ! {send, Msg} end, 
-    nodes()
+    [node() | nodes()]
   ).</span><span class="fragment">
 
 listen(Port, Handler) ->
@@ -618,11 +618,11 @@ accept(LSocket, Handler) ->
   socket_mgr ! {connected, Pid, Socket},</span><span class="fragment">
   accept(LSocket, Handler).</span><span class="fragment">
 
-echo_server(Socket) -></span><span class="fragment">
+simple_server(Socket) -></span><span class="fragment">
   case gen_tcp:recv(Socket, 0) of
     {ok, Data} -></span><span class="fragment">
       send(Data),
-        echo_server(Socket);</span><span class="fragment">
+        simple_server(Socket);</span><span class="fragment">
     {error, closed} -> ok
   end.</span><span class="fragment">
 % savvy?
@@ -640,9 +640,62 @@ echo_server(Socket) -></span><span class="fragment">
             <div class="side-by-side">
               <pre class="left">Erlang</pre><pre class="right">Shell</pre>
               <pre class="left"><code class="erlang" data-noescape>
+> <span class="fragment" data-fragment-index=1>erl -sname b1
+Erlang R16B01 (erts-5.10.2) [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+Eshell V5.10.2  (abort with ^G)
+(b1@bart-mbp)1> </span><span class="fragment" data-fragment-index=2>c(my_server).
+{ok,my_server}
+(b1@bart-mbp)2> </span><span class="fragment" data-fragment-index=3>my_server:listen(8888, 
+    fun(Sock) -> my_server:simple_server(Sock) end).</span>
+
+
+ 
+
 
               </code></pre>
               <pre class="right"><code data-noescape>
+> <span class="fragment" data-fragment-index=4>telnet localhost 8888
+Trying ::1...
+telnet: connect to address ::1: Connection refused
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+</span><span class="fragment" data-fragment-index=11>blah
+</span><span class="fragment" data-fragment-index=12>blah
+</span><span class="fragment" data-fragment-index=14>hey there :)
+</span><span class="fragment" data-fragment-index=15>how ya doin?
+</span><span class="fragment" data-fragment-index=16>how ya doin?
+
+
+              </code></pre>
+              <br class="clearfix"/>
+              <pre class="left"><code class="erlang" data-noescape>
+> <span class="fragment" data-fragment-index=5>erl -sname b2
+Erlang R16B01 (erts-5.10.2) [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+Eshell V5.10.2  (abort with ^G)
+(b2@bart-mbp)1> </span><span class="fragment" data-fragment-index=6>nodes().
+[]
+(b2@bart-mbp)2> </span><span class="fragment" data-fragment-index=7>net_adm:ping('b1@bart-mbp').
+pong
+(b2@bart-mbp)3> </span><span class="fragment" data-fragment-index=8>nodes().
+['b1@bart-mbp']
+(b2@bart-mbp)4> </span><span class="fragment" data-fragment-index=9>my_server:listen(8887, 
+  fun(Sock) -> my_server:simple_server(Sock) end).</span>
+              </code></pre>
+              <pre class="right"><code data-noescape>
+> <span class="fragment" data-fragment-index=10>telnet localhost 8887
+Trying ::1...
+telnet: connect to address ::1: Connection refused
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+</span><span class="fragment" data-fragment-index=12>blah
+</span><span class="fragment" data-fragment-index=13>hey there :)
+</span><span class="fragment" data-fragment-index=14>hey there :)
+</span><span class="fragment" data-fragment-index=16>how ya doin?
+
 
               </code></pre>
             </div>  

@@ -153,14 +153,36 @@ chmod u+x rebar
         <p class="fragment">Limit the blast radius of potential failures by design</p>
         <p class="fragment">Erlang comes with <strong>OTP framework</strong> to help you do that and more!</p>
       </section>
+
+      <section>
+        <h2>Erlang is <strong>functional</strong></h2>
+      </section>
+
       <section>
         <h2>Erlang is</h2>
         <ul>
         <li class="fragment">byte compiled to BEAM and run on ErlangVM (EVM), similar to Java code on JVM</li>
-        <li class="fragment">using all the cores on the machine it runs</li>
+        <li class="fragment">not sharing any memory between processes</li>
+        <li class="fragment">using all the cores on the machine it runs on (and is NUMA aware)</li>
         <li class="fragment">capable of running applications seamlessly across (up to hundreds of) physical servers</li>
+        <li class="fragment">able to spawn (hundreds of) thousands of processes on a single server</li>
         <li class="fragment">preemptively scheduling between Erlang's micro-processes (no need to yield etc.) each process gets a share of CPU time</li>
         <li class="fragment">around for 25+ years - very mature, industry proven, comes with lots of tools and frameworks</li>
+        <li class="fragment">can run on tiny, low power devices as well as on latest and most powerful servers</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Erlang Processes</h2>
+        <ul>
+          <li class="fragment">very lightweight - newly spawned process is 309 words - word is 4 (32bit) or 8 (64bit) bytes</li>
+          <li class="fragment">behind the scenes they are just function code (stack) and some data (heap)</li>
+          <li class="fragment">you can spawn a lot of them - there's a benchmark spawning 20mil processes</li>
+          <li class="fragment">garbage collection is performed per process</li>
+          <li class="fragment">processes communicate via async messages</li>
+          <li class="fragment">sending messages is very cheap</li>
+          <li class="fragment">processes behave same way on different hardware architectures</li>
+          <li class="fragment">processes can monitor each other</li>
+          <li class="fragment">remote processes appear and communicate same way as local</li>
         </ul>
       </section>
       <section>
@@ -168,10 +190,6 @@ chmod u+x rebar
           <h2>Prepare for lightspeed</h2>
           <img src="img/hyperspace_falcon.png" alt="hyperspace"/>
           <p>I'll fly thgough this part so don't worry if you don't catch everything</p>
-        </section>
-
-        <section>
-          <h2>Erlang is <strong>functional</strong></h2>
         </section>
 
         <section>

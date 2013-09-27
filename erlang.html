@@ -808,10 +808,6 @@ Escape character is '^]'.
             <li>Guards</li>
             <li>Hot code swapping</li>
           </ul>
-          <aside class='notes'>
-            Does not compile to Erlang - ala CoffeScript<br>
-            Compiles to bytecode, ala Clojure
-          </aside>
         </section>
 
         <section>
@@ -842,30 +838,180 @@ Escape character is '^]'.
       <section>
         <section>
           <h2>Elixir at a glance</h2>
+          <pre><code class="ruby" data-noescape>defmodule Math do
+  def sum(a, b) do
+    do_sum(a, b)
+  end
+
+  defp do_sum(a, b) do
+    a + b
+  end
+
+  def zero?(0) do
+    true
+  end
+
+  def zero?(x) when is_number(x) do
+    false
+  end
+end
+
+Math.sum(1, 2)    #=> 3
+Math.do_sum(1, 2) #=> ** (UndefinedFunctionError)
+Math.zero?(0)  #=> true
+Math.zero?(1)  #=> false
+Math.zero?([1,2,3])  #=> ** (FunctionClauseError)
+
+          </pre></code>
         </section>
 
         <section>
-          <h2>Numbers</h2>
-        </section>
+          <h2>Comprehension</h2>
+          <pre><code class="ruby" data-noescape>
+iex> lc n inlist [1,2,3,4], do: n * 2
+[2,4,6,8]
 
-        <section>
-          <h2>Lists</h2>
-        </section>
+# or using block
+iex> lc n inlist [1,2,3,4] do
+...>  n * 2
+...> end
+[2,4,6,8]
 
+iex> lc x inlist [1,2], y inlist [2,3], do: x*y
+[2,3,4,6]
+
+iex> lc n inlist [1,2,3,4,5,6], rem(n, 2) == 0, do: n
+[2,4,6]
+          </pre></code>
+        </section>
         <section>
           <h2>Strings</h2>
+          <pre><code class="ruby" data-noescape>
+iex> "hello" == 'hello'
+false
+iex> is_binary "hello"
+true
+iex> is_list 'hello'
+true
+iex> string = "é"  # unicode support!
+"é"
+iex> size(string)
+2
+
+          </pre></code>
         </section>
 
         <section>
-          <h2>Atoms</h2>
+          <h2>Blocks</h2>
+          <pre><code class="ruby" data-noescape>
+iex> if true do
+...>   a = 1 + 2
+...>   a + 10
+...> end
+13
+
+iex> if true, do: (
+...>   a = 1 + 2
+...>   a + 10
+...> )
+13
+
+          </pre></code>
         </section>
 
         <section>
-          <h2>Tuples</h2>
+          <h2>Control flow</h2>
+          <pre><code class="ruby" data-noescape>case { 1, 2, 3 } do
+  { 4, 5, 6 } ->
+    "This won't match"
+  { 1, x, 3 } ->
+    "This will match and assign x to 2"
+  _ ->
+    "This will match any value"
+end
+
+unless true do
+  "This will never be seen"
+end
+
+if false, do: 1 + 2, else: 10 + 3
+
+if false do
+  1 + 2
+else
+  10 + 3
+end
+
+cond do
+  2 + 2 == 5 ->
+    "This will never match"
+  2 * 2 == 3 ->
+    "Nor this"
+  true ->
+    "This will always match (equivalent to else)"
+end
+
+          </pre></code>
+        </section>
+        <section>
+          <h2>Calling Erlang</h2>
+          <pre><code class="ruby">
+iex> :lists.flatten [1,[2],3]
+[1,2,3]
+iex> :math.sin :math.pi
+1.2246467991473532e-16
+
+          </pre></code>
         </section>
 
         <section>
-          <h2>Keyword lists</h2>
+          <h2>Functions</h2>
+          <pre><code class="ruby">
+f = fn
+  x, y when x > 0 -> x + y
+  x, y -> x * y
+end
+
+f.(1, 3)  #=> 4
+f.(-1, 3) #=> -3
+
+          </pre></code>
+        </section>
+
+        <section>
+          <h2>Protocols</h2>
+          <pre><code class="ruby">defprotocol Blank do
+  @doc "Returns true if data is considered blank/empty"
+  @only [Atom, List, BitString, Any]
+  def blank?(data)
+end
+
+defimpl Blank, for: BitString do
+  def blank?(""), do: true
+  def blank?(_), do: false
+end
+
+defimpl Blank, for: List do
+  def blank?([]), do: true
+  def blank?(_),  do: false
+end
+
+# Just the atoms false and nil are blank
+defimpl Blank, for: Atom do
+  def blank?(false), do: true
+  def blank?(nil),   do: true
+  def blank?(_),     do: false
+end
+
+# anything else is not blank
+defimpl Blank, for: Any do
+  def blank?(_), do: false
+end
+
+Blank.blank?(0)       #=> false
+Blank.blank?([])      #=> true
+Blank.blank?([1,2,3]) #=> false
+          </pre></code>
         </section>
       </section>
 
@@ -886,6 +1032,19 @@ Escape character is '^]'.
         <section>
           <h2>What is OTP?</h2>
         </section>
+        <section>
+          <h2>Applications, Supervisors and Workers</h2>
+        </section>
+        <section>
+          <h2>Generic Server gen_server</h2>
+        </section>
+        <section>
+          <h2>Finite State Machine gen_fsm</h2>
+        </section>
+        <section>
+          <h2>Events gen_event</h2>
+        </section>
+        
         <section>
           <section>
             <h2>OTP in Erlang</h2>
@@ -930,6 +1089,8 @@ Escape character is '^]'.
         <h2>Things I didn't talk about</h2>
         <p>ETS/DETS</p>
         <p>Mnesia</p>
+        <p>Elixir macros</p>
+        <p>exception handling</p>
       </section>
 
       <!-- Thanks -->

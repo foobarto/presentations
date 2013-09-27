@@ -158,15 +158,17 @@ chmod u+x rebar
       </section>
 
       <section>
-        <h2>Erlang is</h2>
+        <h2>Erlang</h2>
         <ul>
-        <li class="fragment"><strong>byte compiled</strong> to BEAM and run on ErlangVM (EVM), similar to Java code on JVM</li>
-        <li class="fragment"><strong>shares nothing</strong> between processes</li>
-        <li class="fragment">using <strong>all the cores</strong> on the machine it runs on (and is NUMA aware)</li>
-        <li class="fragment">capable of running applications seamlessly across (up to hundreds of) physical servers</li>
-        <li class="fragment">able to spawn <strong>hundreds of thousands of processes</strong> on a single server</li>
-        <li class="fragment"><strong>preemptive scheduling</strong> between Erlang's micro-processes (no need to yield etc.) each process gets a share of CPU time</li>
-        <li class="fragment">around for <strong>25+ years</strong> - very mature, industry proven, comes with lots of tools and frameworks</li>
+        <li class="fragment">is <strong>byte compiled</strong> to BEAM and run on ErlangVM (EVM), similar to Java code on JVM</li>
+        <li class="fragment"><strong>shares nothing</strong> between
+        processes</li>
+        <li class="fragment">data types are <strong>immutable</strong></li>
+        <li class="fragment">is using <strong>all the cores</strong> on the machine it runs on (and is NUMA aware)</li>
+        <li class="fragment">is capable of running applications seamlessly across (up to hundreds of) physical servers</li>
+        <li class="fragment">is able to spawn <strong>hundreds of thousands of processes</strong> on a single server</li>
+        <li class="fragment">is <strong>preemptive scheduling</strong> between Erlang's micro-processes (no need to yield etc.) each process gets a share of CPU time</li>
+        <li class="fragment">is around for <strong>25+ years</strong> - very mature, industry proven, comes with lots of tools and frameworks</li>
         <li class="fragment">can run on tiny, low power devices as well as on latest and most powerful servers</li>
         </ul>
       </section>
@@ -545,7 +547,7 @@ end.
         </section>
 
         <section>
-          <h2>Looping</h2>
+          <h2>Tail recursion</h2>
           <pre><code class="erlang" data-noescape>
 print_each([]) ->  
   ok;
@@ -898,6 +900,10 @@ iex> string = "é"  # unicode support!
 "é"
 iex> size(string)
 2
+iex> name = "world"
+iex> "hello #{name}"   # string interpolation!
+"hello world"
+
 
           </pre></code>
         </section>
@@ -1012,6 +1018,29 @@ end
 Blank.blank?(0)       #=> false
 Blank.blank?([])      #=> true
 Blank.blank?([1,2,3]) #=> false
+          </pre></code>
+        </section>
+        <section>
+          <h2>Processes and Messaging</h2>
+          <pre><code class="ruby" data-noescape>
+# Get the current process id
+iex> current_pid = self()
+
+# Spawn another process that will send a message to current_pid
+iex> spawn fn ->
+  current_pid <- { :hello, self() }
+end
+<0.36.0>
+
+# Collect the message
+iex> receive do
+...>   { :hello, pid } ->
+...>     IO.puts "Hello from #{inspect(pid)}"
+...> after
+...>   1000 -> # 1 second
+...>     IO.puts "Too late"
+...> end
+Hello from <0.36.0>                  
           </pre></code>
         </section>
       </section>

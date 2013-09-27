@@ -25,7 +25,7 @@
 
   }
   .side-by-side code {
-    font-size: 70%;
+    font-size: 90%;
   }
 
   .side-by-side .left,
@@ -183,8 +183,11 @@ chmod u+x rebar
           <li class="fragment">processes communicate via <strong>async messages</strong></li>
           <li class="fragment">sending messages is very cheap</li>
           <li class="fragment">processes behave same way on different hardware architectures</li>
-          <li class="fragment">processes can monitor each other</li>
-          <li class="fragment">remote processes appear and communicate same way as local</li>
+          <li class="fragment">processes <strong>can monitor each other</strong></li>
+          <li class="fragment">remote processes appear and communicate
+          same way as local</li>
+          <li class="fragment">can <strong>register names</strong> locally (same node)
+          or globally (on whole cluster) and be accessed by their name</li>
         </ul>
       </section>
       <section>
@@ -322,21 +325,14 @@ true
 15768105
 2> </span><span class="fragment">Pixel = << Color:24 >>.
 << 240,154,41 >>
-3> </span><span class="fragment">Pixels = << 213,45,132,64,76,32,76,0,0,234,32,15 >>.
-<< 213,45,132,64,76,32,76,0,0,234,32,15 >>
-4> </span><span class="fragment"><< Pix1,Pix2,Pix3,Pix4 >> = Pixels.
-** exception error: no match of right hand side value << 213,45,132,64,76,32,76,
-0,0,234,32,15 >>
-5> </span><span class="fragment"><< Pix1:24, Pix2:24, Pix3:24, Pix4:24 >> = Pixels.
-<< 213,45,132,64,76,32,76,0,0,234,32,15 >>
-6> </span><span class="fragment"><< R:8, G:8, B:8 >> = << Pix1:24 >>.
-<< 213,45,132 >>
+3> </span><span class="fragment"><< R:8, G:8, B:8 >> = << Color:24 >>.
+<< 240,154,41 >>
 7> </span><span class="fragment">R.
-213
-8> </span><span class="fragment"><< R:8, Rest/binary >> = Pixels.
-<< 213,45,132,64,76,32,76,0,0,234,32,15 >>
+240
+8> </span><span class="fragment"><< R:8, Rest/binary >> = Color.
+<< 240,154,41 >>
 9> </span><span class="fragment">R.
-213
+240
 10> </span><span class="fragment"><< SourcePort:16, DestinationPort:16,
 AckNumber:32,
 DataOffset:4, _Reserved:4, Flags:8, WindowSize:16,
@@ -382,7 +378,8 @@ false
 
         <section>
           <h2>Tuples</h2>
-          <p>Fixed length collection of items</p>
+          <p>Fixed length collection of items - the workhorse of
+          Erlang</p>
           <pre><code class="erlang" data-noescape>
 1> <span class="fragment">X = 10, Y = 4.
 4
@@ -526,17 +523,7 @@ greet_and_add_two(X) ->
 
         <section>
           <h2>Conditionals</h2>
-          <pre><code class="erlang" data-noescape><span class="fragment">
-if
-  A == 5 ->
-    do_something();
-  true ->  % practically 'else'
-    do_something_else();
-end.
-</span><span class="fragment">
-% 'if' statement is weird and not very popular in Erlang
-% developers prefer using 'case' statement
-</span><span class="fragment">
+          <pre><code class="erlang" data-noescape>
 case Expression of <span class="fragment">
   {run_command, Cmd} ->
     do_something(Cmd);</span><span class="fragment">
@@ -576,7 +563,7 @@ Pid = spawn('node1@somehost', io, format, ["Hi"]).  % spawn(Node, Module, Functi
 
         <section>
             <h2>Message passing</h2>
-            <div class="side-by-side" style="font-size: 140%">
+            <div class="side-by-side">
                 <pre class="left fragment"><code class="erlang" data-noescape>Pid ! Message.
 
 Pid ! {run_command, shutdown}.
@@ -962,7 +949,7 @@ end
         </section>
         <section>
           <h2>Calling Erlang</h2>
-          <pre><code class="ruby">
+          <pre><code class="ruby" data-noescape>
 iex> :lists.flatten [1,[2],3]
 [1,2,3]
 iex> :math.sin :math.pi
@@ -973,7 +960,7 @@ iex> :math.sin :math.pi
 
         <section>
           <h2>Functions</h2>
-          <pre><code class="ruby">
+          <pre><code class="ruby" data-noescape>
 f = fn
   x, y when x > 0 -> x + y
   x, y -> x * y
@@ -987,7 +974,7 @@ f.(-1, 3) #=> -3
 
         <section>
           <h2>Protocols</h2>
-          <pre><code class="ruby">defprotocol Blank do
+          <pre><code class="ruby" data-noescape>defprotocol Blank do
   @doc "Returns true if data is considered blank/empty"
   @only [Atom, List, BitString, Any]
   def blank?(data)

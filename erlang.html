@@ -167,9 +167,18 @@ chmod u+x rebar
         <li class="fragment">is using <strong>all the cores</strong> on the machine it runs on (and is NUMA aware)</li>
         <li class="fragment">is capable of running applications seamlessly across (up to hundreds of) physical servers</li>
         <li class="fragment">is able to spawn <strong>hundreds of thousands of processes</strong> on a single server</li>
-        <li class="fragment">is <strong>preemptive scheduling</strong> between Erlang's micro-processes (no need to yield etc.) each process gets a share of CPU time</li>
+        <li class="fragment">is <strong>preemptive scheduling</strong>
+        between Erlang's micro-processes (no need to yield etc.) each
+        process gets a share of CPU time</li>
+        <li class="fragment">applications/servers don't need to be
+        stopped for upgrades thanks to <strong>hot code
+        swapping</strong><li>
+        <li class="fragment">has built in error recovery support</li>
         <li class="fragment">is around for <strong>25+ years</strong> - very mature, industry proven, comes with lots of tools and frameworks</li>
-        <li class="fragment">can run on tiny, low power devices as well as on latest and most powerful servers</li>
+        <li class="fragment">can run on tiny, low power devices as
+        well as on latest and most powerful servers</li>
+        <li class="fragment">can be extended with other programming
+        languages (C/C++, Java, Python, Ruby etc)</li>
         </ul>
       </section>
       <section>
@@ -179,11 +188,14 @@ chmod u+x rebar
           newly spawned process is just over 300 words - word is 4 (32bit) or 8 (64bit) bytes</li>
           <li class="fragment">behind the scenes they are just function code (stack) and some data (heap)</li>
           <li class="fragment">you can spawn a lot of them - there's a benchmark spawning 20mil processes</li>
-          <li class="fragment"><strong>garbage collection is performed per process</strong></li>
+          <li class="fragment">efficient <strong>per process garbage collection</strong></li>
           <li class="fragment">processes communicate via <strong>async messages</strong></li>
           <li class="fragment">sending messages is very cheap</li>
           <li class="fragment">processes behave same way on different hardware architectures</li>
-          <li class="fragment">processes <strong>can monitor each other</strong></li>
+          <li class="fragment">processes <strong>can monitor each
+          other</strong></li>
+          <li class="fragment">processes <strong>can be linked
+          together</strong> for process termination propagation</li>
           <li class="fragment">remote processes appear and communicate
           same way as local</li>
           <li class="fragment">can <strong>register names</strong> locally (same node)
@@ -735,7 +747,7 @@ Escape character is '^]'.
 </span><span class="fragment" data-fragment-index=14>hey there :)
 </span><span class="fragment" data-fragment-index=15>how ya doin?
 </span><span class="fragment" data-fragment-index=16>how ya doin?
-
+</span>
 
               </code></pre>
               <br class="clearfix"/>
@@ -764,7 +776,7 @@ Escape character is '^]'.
 </span><span class="fragment" data-fragment-index=13>hey there :)
 </span><span class="fragment" data-fragment-index=14>hey there :)
 </span><span class="fragment" data-fragment-index=16>how ya doin?
-
+</span>
 
               </code></pre>
             </div>  
@@ -1048,18 +1060,79 @@ Hello from <0.36.0>
         </section>
         <section>
           <h2>What is OTP?</h2>
+          <p class="fragment">formalizes structure for applications</p>
+          <p class="fragment">provides behaviours - callback templates
+          (design patterns) for your code</p>
         </section>
         <section>
           <h2>Applications, Supervisors and Workers</h2>
+          <ul>
+            <li class="fragment"><strong>application</strong> -
+            defines how application is implemented</li>
+            <li class="fragment"><strong>supervisor</strong> - defines
+            supervisor trees, restart strategies and workers</li>
+            <li class="fragment"><strong>gen_server</strong> -
+            behaviour for server type workers</li>
+            <li class="fragment"><strong>gen_fsm</strong> - behaviour
+            for creating finite state machines</li>
+            <li class="fragment"><strong>gen_event</strong> -
+            behaviour for creating event handlers</li>
+          </ul>
         </section>
         <section>
+          <h2>Application</h2>
+          <img src="img/application-controller.png"/>
+          <p style="font-size:40%">image
+          from <a href="http://learnyousomeerlang.com/">LearnYouSomeErlang.com</a></p>
+            <p class="fragment">contains list of modules and arguments in your
+            application</p>
+            <p class="fragment">is responsible for starting and stopping
+            supervisor(s) your application needs</p>
+
+        </section>
+
+        <section>
+          <h2>Supervisor</h2>
+          <img src="img/sup-tree.png" />
+          <p style="font-size:40%">image
+          from <a href="http://learnyousomeerlang.com/">LearnYouSomeErlang.com</a></p>
+          <p class="fragment">responsible for starting and maintaining
+          workers and other supervisors</p>
+          <p class="fragment">defines restart strategy for processes -
+          it's the heart of the robustness of Erlang applications!</li>
+        </section>
+        
+        <section>
           <h2>Generic Server gen_server</h2>
+          <p class="fragment">a template for client/server application workers</p>
+          <p class="fragment">you may think of it as abstract
+          class</p>
+          <p class="fragment">your code is a collection of callbacks
+          - the process is managed by OTP</p>
+          <p class="fragment">you can implement sync and async calls
+          with handle_call and handle_cast callbacks</p>
         </section>
         <section>
           <h2>Finite State Machine gen_fsm</h2>
+          <img src="img/fsm_dog.png" />
+          <p style="font-size:40%">image
+          from <a href="http://learnyousomeerlang.com/">LearnYouSomeErlang.com</a></p>
+          <p class="fragment">behaviour for defining FSM</p>
         </section>
         <section>
           <h2>Events gen_event</h2>
+          <img src="img/event-manager.png" />
+          <p style="font-size:40%">image
+          from <a href="http://learnyousomeerlang.com/">LearnYouSomeErlang.com</a></p>
+          <p class="fragment">behaviour for custom event handlers</p>
+          <p class="fragment">used to implement efficient message
+          dispatching between processes</p>
+
+          <p class="fragment">If your server has many subscribers, it can keep going
+              because it only needs to forward events once</p>       
+          <p class="fragment">You don't need to spawn processes for short lived tasks</p>
+          
+          
         </section>
         
         <section>
@@ -1089,6 +1162,18 @@ Hello from <0.36.0>
       <!-- What is erlang good for? Who is using it? -->
       <section>
         <h2>Who is using Erlang?</h2>
+        <p class="fragment">Ericsson - AXD 301, GPRS, LCS</p>
+        <p class="fragment">Erlang Financial Systems - Banking &amp; Lottery systems<p>
+        <p class="fragment">Nortel - VPN gateway + others<p>
+        <p class="fragment">Facebook - Messenger chat<p>
+        <p class="fragment">Google - GTalk<p>
+        <p class="fragment">Amazon - SQS and SimpleDB<p>
+        <p class="fragment">Microsoft - Bing search<p>
+        <p class="fragment">EMC/VMWare - RabbitMQ<p>
+        <p class="fragment">MochiMedia - Flash ads middleware<p>
+        <p class="fragment">Del.icio.us/Yahoo - social bookmarking<p>
+        <p class="fragment">AOL</p>
+        
       </section>  
 
       <!-- Brief look at other tools (dialyzer, zotonic, wrangler, meck, proper, cover, ChicagoBoss, Cowboy -->

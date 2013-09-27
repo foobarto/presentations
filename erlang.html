@@ -392,10 +392,10 @@ false
           <p>Fixed length collection of items - the workhorse of
           Erlang</p>
           <pre><code class="erlang" data-noescape>
-1> <span class="fragment">X = 10, Y = 4.
-4
+1> <span class="fragment">X = 4, Y = 5.
+5
 2> </span><span class="fragment">Point = {X,Y}.
-{10,4}
+{4,5}
 3> </span><span class="fragment">Point = {4,5}.
 {4,5}
 4> </span><span class="fragment">{X,Y} = Point.
@@ -499,6 +499,7 @@ end.
 
 lists:map(F, List).
           </span></code></pre>
+          <p class="fragment">can be passed to other functions as argument</p>
         </section>
 
         <section>
@@ -536,7 +537,7 @@ greet_and_add_two(X) ->
           <h2>Conditionals</h2>
           <pre><code class="erlang" data-noescape>
 case Expression of <span class="fragment">
-  {run_command, Cmd} ->
+  {run_command, Cmd} ->   % Expression == {run_command, Something}
     do_something(Cmd);</span><span class="fragment">
   _ ->  % anything starting with underscore means 'ignore this' or 'anything'
     ok</span>
@@ -581,8 +582,9 @@ Pid ! {run_command, shutdown}.
 
 Pid ! 42.
 
+some_registered_name ! "hey there".
 
-                </code></pre>
+{some_name, 'othernode@otherserver'} ! "how ya doin?".</code></pre>
                 <pre class="right fragment"><code class="erlang" data-noescape>receive
   {run_command, Cmd} ->
     io:format("Running command ~p~n", [Cmd]);
@@ -591,6 +593,7 @@ Pid ! 42.
   Data ->
     io:format("Got something ~p~n", [Data])
 end.
+                    
 </code></pre>
             </div>
             <span class="fragment"><strong>Pid</strong> can exist on <strong>any node</strong> (server) of Erlang cluster!</span>
@@ -954,9 +957,7 @@ cond do
     "Nor this"
   true ->
     "This will always match (equivalent to else)"
-end
-
-          </pre></code>
+end</pre></code>
         </section>
         <section>
           <h2>Calling Erlang</h2>

@@ -66,7 +66,6 @@
 
         <section>
           <h2>Who am I?</h2>
-          <p>Bartosz Ptaszynski</p>
           <p>Polyglot programmer and programming languages tourist</p>
           <p><a href="http://twitter.com/foobarto">@foobarto</a> | <a href="mailto:bart@yazzgoth.com">bart@yazzgoth.com</a></p>
         </section>
@@ -194,17 +193,13 @@ chmod u+x rebar
 
         <section>
           <h2>Some syntax weirdness</h2>
-          <p class="fragment">Periods . end everything except when</p>
-          <p class="fragment">Semicolons ; end clauses</p>
-          <p class="fragment">and Commas , separate expressions</p>
+          <p class="fragment">Periods <strong>.</strong> end everything except when</p>
+          <p class="fragment">Semicolons <strong>;</strong> end clauses</p>
+          <p class="fragment">and Commas <strong>,</strong> separate expressions</p>
         </section>
 
         <section>
-          <img src="img/raised_eyebrow.png"/>
-        </section>
-
-        <section>
-          <h2>Variables, pattern matching and assignment</h2>
+          <h2>Single assignment variables</h2>
           <pre><code class="erlang" data-noescape>~> erl
 Erlang R16B01 (erts-5.10.2) [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
 
@@ -215,16 +210,41 @@ Eshell V5.10.2  (abort with ^G)
 5
 3> </span><span class="fragment">B = 3.    % once assigned, they cannot change!
 ** exception error: no match of right hand side value 3
-4> </span><span class="fragment">Coords = {10, 20, 30}.
-{10,20,30}
-5> </span><span class="fragment">{X1, Y1, Z1} = Coords.
-{10,20,30}
-6> </span><span class="fragment">X1.
-10
-7></span>
-          </code></pre>
+4> </span>
+          </pre></code>
+        </section>
+              
+        <section>
+          <img src="img/raised_eyebrow.png"/>
+          <p>Wot?</p>
         </section>
         
+        <section>
+          <p>There are <strong>no</strong> loops (while, for, etc)</p>
+          <p>Use <strong>recursive functions</strong> instead</p>
+          <img src="img/photobucket-shocked.gif" class="fragment" />
+        </section>
+        <section>
+          <h2>Strings</h2>
+          <pre><code class="erlang" data-noescape>1> <span class="fragment">MyStr = "abcd".
+"abcd"
+2> </span><span class="fragment">MyStr = [97, 98, 99, 100].  % wait.. what?!
+"abcd"
+3> </span><span class="fragment">lists:sort("dcba").  % because they are lists we can do things like this
+"abcd"
+4> </span>
+          </code></pre>
+          <p class="fragment">Strings are just lists</p>
+        </section>
+        
+        <section>
+          <h2>Some cool things</h2>
+        </section>
+        
+        
+          </code></pre>
+        </section>
+       <!--  
         <section>
           <h2>Numbers</h2>
           <p>As large as memory permits</p>
@@ -243,7 +263,8 @@ false
 7></span>
           </code></pre>
         </section>
-
+-->
+       <!-- 
         <section>
           <h2>(Linked) Lists</h2>
           <pre><code class="erlang" data-noescape>1> <span class="fragment">List = [1, 2, 3].
@@ -268,8 +289,10 @@ true
 [1, 2, 3, {numbers,[4,5,6]}, 5.34, atom]</span>
           </code></pre>
         </section>
+        -->
+       
         <section>
-          <h2>List comperhension</h2>
+          <h2>List comprehension</h2>
           <pre><code class="erlang" data-noescape>1><span class="fragment">[2*N || N <- [1,2,3,4]].   % list comperhension!
 [2,4,6,8]
 2> </span><span class="fragment">[X || X <- [1,2,3,4,5,6,7,8,9,10], X rem 2 =:= 0].
@@ -287,19 +310,6 @@ true
 5> </span><span class="fragment">FoggyPlaces = [X || {X, fog} <- Weather].  % pattern matching in list comperhension!
 [london,boston]</span>
           </code></pre>
-        </section>
-
-        <section>
-          <h2>Strings</h2>
-          <pre><code class="erlang" data-noescape>1> <span class="fragment">MyStr = "abcd".
-"abcd"
-2> </span><span class="fragment">MyStr = [97, 98, 99, 100].  % wait.. what?!
-"abcd"
-3> </span><span class="fragment">lists:sort("dcba").  % because they are lists we can do things like this
-"abcd"
-4> </span>
-          </code></pre>
-          <p class="fragment">Strings are just lists</p>
         </section>
 
         <section> 
@@ -333,15 +343,7 @@ Payload/binary >> = SomePacket.</span>
         </section>
 
         <section>
-          <h2>Binaries and Bit Syntax contd.</h2>
-          <p>Value</p>
-          <p>Value:Size</p>
-          <p>Value/TypeSpecifierList</p>
-          <p>Value:Size/TypeSpecifierList</p>
-        </section>
-
-        <section>
-          <h2>Binary comperhension</h2>
+          <h2>Binary comprehension</h2>
           <pre><code class="erlang" data-noescape>
 1> <span class="fragment">[ X || << X >> <= << 1,2,3,4,5 >>, X rem 2 == 0].    
 [2,4]
@@ -354,6 +356,7 @@ Payload/binary >> = SomePacket.</span>
 </span>
           </code></pre>
         </section>
+        
         <section>
           <h2>Atoms</h2>
           <p>Similar to Ruby symbols, used to represent non-numerical constants, ie. true, ok, blah, error</p>
@@ -398,11 +401,58 @@ false
 {point,{4,5}}
 </span>         </code></pre>
         </section>
-
+<!--
         <section>
           <h2>Proplists, Dicts, etc.</h2>
-        </section>
+          <pre><code class="erlang" data-noescape><span class="fragment">
+1> proplists:get_value(yellow, [{yellow, bananna}, {red, apple}, {yellow, lemon}]).
+bananna
+2> </span><span class="fragment">proplists:lookup(yellow, [{yellow, bananna}, {red, apple}, {yellow,lemon}]).
+{yellow,bananna}
+3> </span><span class="fragment">proplists:delete(yellow, [{yellow, bananna}, {red, apple}, {yellow,lemon}]).
+[{red,apple}]
+4> </span><span class="fragment">proplists:get_all_values(yellow, [{yellow, bananna}, {red, apple},{yellow, lemon}]).
+[bananna,lemon]
+5> </span><span class="fragment">D = dict:new().
+{dict,0,16,16,8,80,48,
+      {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+      {{[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]}}}
+6> </span><span class="fragment">D1 = dict:store(yellow, bananna, D).
+7> </span><span class="fragment">D1:find(yellow).
+{ok,bananna}
+8> </span><span class="fragment">dict:find(yellow, D1).
+{ok,bananna}
+9> </span><span class="fragment">dict:fetch(yellow, D1).
+bananna
+10> </span><span class="fragment">S = sets:new().
+{set,0,16,16,8,80,48,
+     {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+     {{[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]}}}
+11> </span><span class="fragment">sets:to_list( sets:intersection(sets:from_list([1,2,3,4]),
+sets:from_list([3,4,5,6,7])) ).
+[3,4]
+12> </span>
 
+          </pre></code>
+        </section>
+-->
+        <section>
+          <h2>Other data types</h2>
+          <ul>            
+            <li class="fragment"><strong>proplist</strong> - property list</li>
+            <li class="fragment"><strong>dict</strong> - dictionary/hash table</li>
+            <li class="fragment"><strong>orddict</strong> - ordered dictionary</li>
+            <li class="fragment"><strong>gb_trees</strong> - general balanced
+            trees</li>
+            <li class="fragment"><strong>ordsets</strong> - ordered sets</li>
+            <li class="fragment"><strong>gb_sets</strong> - general balanced sets</li>
+            <li class="fragment"><strong>sofs</strong> - sets of sets</li>
+            <li class="fragment"><strong>digraph</strong> - directed graphs</li>
+            <li class="fragment"><strong>queue</strong> - all kind of queue
+            implementations</li>
+          </ul>
+        </section>
+        
         <section>
           <h2>Functions and pattern matching</h2>
           <pre><code class="erlang" data-noescape><span class="fragment">
@@ -515,15 +565,16 @@ Pid = spawn(F).
             </code></pre>
             or
             <pre><code class="erlang" data-noescape>
-Pid = spawn(io, format, ["Hi"]).
+Pid = spawn(io, format, ["Hi"]).  % spawn(Module, Function, Args)
+
+Pid = spawn('node1@somehost', io, format, ["Hi"]).  % spawn(Node, Module, Function, Args)
             </code></pre>
         </section>
 
         <section>
             <h2>Message passing</h2>
-            <div class="side-by-side">
-              <div class="left">
-                <pre><code class="erlang" data-noescape>Pid ! Message.
+            <div class="side-by-side" style="font-size: 140%">
+                <pre class="left fragment"><code class="erlang" data-noescape>Pid ! Message.
 
 Pid ! {run_command, shutdown}.
 
@@ -531,9 +582,7 @@ Pid ! 42.
 
 
                 </code></pre>
-              </div>
-              <div class="right fragment">
-                <pre><code class="erlang" data-noescape>receive
+                <pre class="right fragment"><code class="erlang" data-noescape>receive
   {run_command, Cmd} ->
     io:format("Running command ~p~n", [Cmd]);
   Data when is_integer(Data) ->
@@ -542,11 +591,10 @@ Pid ! 42.
     io:format("Got something ~p~n", [Data])
 end.
 </code></pre>
-              </div>
             </div>
             <span class="fragment"><strong>Pid</strong> can exist on <strong>any node</strong> (server) of Erlang cluster!</span>
         </section>
-
+<!-- 
         <section>
           <h2>Records</h2>
           <div class="side-by-side">
@@ -587,6 +635,8 @@ hobbies = "building cars",details = []}</span></code></pre>
           </div>
         </section>
       </section>
+
+-->
         <!-- Erlang Chat Server -->
         <section>
       

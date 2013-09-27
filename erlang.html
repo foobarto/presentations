@@ -70,7 +70,7 @@
           <p><a href="http://twitter.com/foobarto">@foobarto</a> | <a href="mailto:bart@yazzgoth.com">bart@yazzgoth.com</a></p>
         </section>
       </section>
-
+<!--
       <section>
         <section>
           <h2>Before we start - Installation</h2>
@@ -114,7 +114,7 @@ chmod u+x rebar
           </code></pre>
         </section>
       </section>
-
+-->
       <!-- Erlang -->
       <section>
         <h2>What is Erlang?</h2>
@@ -160,24 +160,25 @@ chmod u+x rebar
       <section>
         <h2>Erlang is</h2>
         <ul>
-        <li class="fragment">byte compiled to BEAM and run on ErlangVM (EVM), similar to Java code on JVM</li>
-        <li class="fragment">not sharing any memory between processes</li>
-        <li class="fragment">using all the cores on the machine it runs on (and is NUMA aware)</li>
+        <li class="fragment"><strong>byte compiled</strong> to BEAM and run on ErlangVM (EVM), similar to Java code on JVM</li>
+        <li class="fragment"><strong>shares nothing</strong> between processes</li>
+        <li class="fragment">using <strong>all the cores</strong> on the machine it runs on (and is NUMA aware)</li>
         <li class="fragment">capable of running applications seamlessly across (up to hundreds of) physical servers</li>
-        <li class="fragment">able to spawn (hundreds of) thousands of processes on a single server</li>
-        <li class="fragment">preemptively scheduling between Erlang's micro-processes (no need to yield etc.) each process gets a share of CPU time</li>
-        <li class="fragment">around for 25+ years - very mature, industry proven, comes with lots of tools and frameworks</li>
+        <li class="fragment">able to spawn <strong>hundreds of thousands of processes</strong> on a single server</li>
+        <li class="fragment"><strong>preemptive scheduling</strong> between Erlang's micro-processes (no need to yield etc.) each process gets a share of CPU time</li>
+        <li class="fragment">around for <strong>25+ years</strong> - very mature, industry proven, comes with lots of tools and frameworks</li>
         <li class="fragment">can run on tiny, low power devices as well as on latest and most powerful servers</li>
         </ul>
       </section>
       <section>
         <h2>Erlang Processes</h2>
         <ul>
-          <li class="fragment">very lightweight - newly spawned process is 309 words - word is 4 (32bit) or 8 (64bit) bytes</li>
+          <li class="fragment">very <strong>lightweight</strong> -
+          newly spawned process is just over 300 words - word is 4 (32bit) or 8 (64bit) bytes</li>
           <li class="fragment">behind the scenes they are just function code (stack) and some data (heap)</li>
           <li class="fragment">you can spawn a lot of them - there's a benchmark spawning 20mil processes</li>
-          <li class="fragment">garbage collection is performed per process</li>
-          <li class="fragment">processes communicate via async messages</li>
+          <li class="fragment"><strong>garbage collection is performed per process</strong></li>
+          <li class="fragment">processes communicate via <strong>async messages</strong></li>
           <li class="fragment">sending messages is very cheap</li>
           <li class="fragment">processes behave same way on different hardware architectures</li>
           <li class="fragment">processes can monitor each other</li>

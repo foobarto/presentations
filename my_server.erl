@@ -1,5 +1,5 @@
 -module(my_server).
--export([listen/2, simple_server/1]).
+-export([listen/2, simple_server/1, send/1]).
 
 % defining TCP_OPTIONS macro
 -define(TCP_OPTIONS, [binary, {packet, 0}, 
@@ -28,7 +28,7 @@ registry(Sockets) ->
 		_ -> registry(Sockets)
 	end.
 
-send_to_sockets(Msg) ->
+send(Msg) ->
 	io:format("Sending Msg ~p~n", [Msg]),
 	lists:map(fun(Node) -> {socket_mgr, Node} ! {send, Msg} end, [node() | nodes()]).
 
@@ -50,7 +50,7 @@ simple_server(Socket) ->
     case gen_tcp:recv(Socket, 0) of
         {ok, Data} ->
         	io:format("Data received ~p~n", [Data]),
-            send_to_sockets(Data),
+            send(Data),
             simple_server(Socket);
         {error, closed} ->
         	io:format("echo connection closed"),

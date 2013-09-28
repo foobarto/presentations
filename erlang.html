@@ -204,7 +204,7 @@ chmod u+x rebar
       <section>
         <section>
           <h2>Prepare for lightspeed</h2>
-          <img src="img/hyperspace_falcon.png" alt="hyperspace"/>
+          <img width="100%" src="img/hyperspace_falcon.png" alt="hyperspace"/>
           <p>I'll fly thgough this part so don't worry if you don't catch everything</p>
         </section>
 
@@ -310,13 +310,13 @@ true
        
         <section>
           <h2>List comprehension</h2>
-          <pre><code class="erlang" data-noescape>1><span class="fragment">[2*N || N <- [1,2,3,4]].   % list comperhension!
-[2,4,6,8]
-2> </span><span class="fragment">[X || X <- [1,2,3,4,5,6,7,8,9,10], X rem 2 =:= 0].
-[2,4,6,8,10]
-3> </span><span class="fragment">[X+Y || X <- [1,2], Y <- [2,3]].
+          <pre><code class="erlang" data-noescape>1>[ <span class="fragment" data-fragment-index=3>2*N || </span><span class="fragment" data-fragment-index=1>N </span><span class="fragment" data-fragment-index=2><- [1,2,3,4]</span>].   % list comperhension!
+<span class="fragment">[2,4,6,8]
+2> </span><span class="fragment">[<span class="fragment" data-fragment-index=5>X ||</span> <span class="fragment" data-fragment-index=4>X <- [1,2,3,4,5,6,7,8,9,10]</span>, <span class="fragment" data-fragment-index=6>X rem 2 =:= 0</span>].
+<span class="fragment" data-fragment-index=7>[2,4,6,8,10]
+3> </span></span><span class="fragment" data-fragment-index=8>[X+Y || X <- [1,2], Y <- [2,3]].
 [3,4,4,5]
-4> </span><span class="fragment">Weather = [{toronto, rain}, {montreal, storms}, {london, fog},  
+4> </span><span class="fragment" data-fragment-index=9>Weather = [{toronto, rain}, {montreal, storms}, {london, fog},  
 4>            {paris, sun}, {boston, fog}, {vancouver, snow}].
 [{toronto,rain},
 {montreal,storms},
@@ -324,7 +324,7 @@ true
 {paris,sun},
 {boston,fog},
 {vancouver,snow}]
-5> </span><span class="fragment">FoggyPlaces = [X || {X, fog} <- Weather].  % pattern matching in list comperhension!
+5> </span></span><span class="fragment" data-fragment-index=10>FoggyPlaces = [<span class="fragment" data-fragment-index=12>X || </span><span class="fragment" data-fragment-index=11>{X, fog} <- Weather</span>].  % pattern matching in list comperhension!</span><span class="fragment" data-fragment-index=13>
 [london,boston]</span>
           </code></pre>
         </section>
@@ -656,7 +656,7 @@ hobbies = "building cars",details = []}</span></code></pre>
             <pre class="left">my_server.erl</pre>
             <div class="side-by-side">
             <pre class="left"><code class="erlang" data-noescape><span class="fragment">-module(my_server).
--export([listen/2, simple_server/1]).</span><span class="fragment">
+-export([listen/2, simple_server/1, send/1]).</span><span class="fragment">
 
 -define(TCP_OPTIONS, [binary, {packet, 0}, 
   {active, false}, {reuseaddr, true}]).</span><span class="fragment">
@@ -713,7 +713,7 @@ simple_server(Socket) -></span><span class="fragment">
 </span></code></pre></div>
           </section>
           <section>
-            <img src="img/shocked.png" />
+            <img src="img/hmm.gif" width="200%"/>
           </section>  
           <section>
             <img src="img/lets_see_what_happens.jpg"/>
@@ -782,6 +782,9 @@ Escape character is '^]'.
 
               </code></pre>
             </div>  
+          </section>
+          <section>
+            <img src="img/seems_legit.png"/>
           </section>
         </section>  
       
@@ -968,6 +971,7 @@ iex> :math.sin :math.pi
 1.2246467991473532e-16
 
           </pre></code>
+          <img src="img/hello-this-is-dog.gif"/>
         </section>
 
         <section>
@@ -986,9 +990,10 @@ f.(-1, 3) #=> -3
 
         <section>
           <h2>Protocols</h2>
-          <pre><code class="ruby" data-noescape>defprotocol Blank do
-  @doc "Returns true if data is considered blank/empty"
-  @only [Atom, List, BitString, Any]
+          <div class="side-by-side">
+          <pre class="left"><code class="ruby" data-noescape>defprotocol Blank do
+  @doc "Returns true if is considered blank/empty"
+  <!-- @only [Atom, List, BitString, Any] -->
   def blank?(data)
 end
 
@@ -1001,8 +1006,8 @@ defimpl Blank, for: List do
   def blank?([]), do: true
   def blank?(_),  do: false
 end
-
-# Just the atoms false and nil are blank
+</code></pre>
+<pre class="right"><code class="ruby" data-noescape># Just the atoms false and nil are blank
 defimpl Blank, for: Atom do
   def blank?(false), do: true
   def blank?(nil),   do: true
@@ -1016,8 +1021,7 @@ end
 
 Blank.blank?(0)       #=> false
 Blank.blank?([])      #=> true
-Blank.blank?([1,2,3]) #=> false
-          </pre></code>
+Blank.blank?([1,2,3]) #=> false</pre></code>
         </section>
         <section>
           <h2>Processes and Messaging</h2>
@@ -1048,6 +1052,103 @@ Hello from <0.36.0>
       <section>
         <section>
           <h2>Elixir Chat Server</h2>
+          <p class="fragment">But wait, what's the point in reimplementing everything we have done in Erlang?</p>
+        </section>
+        <section>
+          <pre><code class="ruby" data-noescape>
+defmodule MyServer do<span class="fragment" data-fragment-index=1>
+  def simple_server(socket) do<span class="fragment" data-fragment-index=2>
+    case :gen_tcp.recv(socket, 0) do </span><span class="fragment" data-fragment-index=3>
+      {:ok, data} -> </span><span class="fragment" data-fragment-index=4>
+        :my_server.send(data) </span><span class="fragment" data-fragment-index=5>
+        simple_server(socket)</span><span class="fragment" data-fragment-index=6>
+      {:error, :closed} ->
+        :ok</span><span class="fragment" data-fragment-index=7>
+    end </span>
+  end</span>
+<span class="fragment" data-fragment-index=8>
+  def listen(port, handler) do
+    :my_server.listen(port, handler)
+  end </span><span class="fragment" data-fragment-index=9>
+
+  def simple_listen(port) do
+    listen(port, fn socket -> simple_server(socket) end)
+  end</span>
+end
+          </code></pre>
+        </section>
+        <section>
+          <h2>Let's see it in action</h2>
+          <div class="side-by-side">
+            <pre class="left">Erlang</pre>
+            <pre class="right">Console</pre>
+          </div>
+          <div class="side-by-side">
+            <pre class="left"><code class="erlang" data-noescape>
+> <span class="fragment" data-fragment-index=1>erl -sname b1
+Erlang R16B01 (erts-5.10.2) [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+Eshell V5.10.2  (abort with ^G)
+(b1@bart-mbp)1> </span><span class="fragment" data-fragment-index=2>c(my_server).
+{ok,my_server}
+(b1@bart-mbp)2> </span><span class="fragment" data-fragment-index=3>my_server:listen(8888, 
+    fun(Sock) -> my_server:simple_server(Sock) end).</span>
+
+
+ 
+
+
+              </code></pre>
+              <pre class="left"><code data-noescape>
+> <span class="fragment" data-fragment-index=4>telnet localhost 8888
+Trying ::1...
+telnet: connect to address ::1: Connection refused
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+</span><span class="fragment" data-fragment-index=11>hello from Erlang
+</span><span class="fragment" data-fragment-index=12>hello from Erlang
+</span><span class="fragment" data-fragment-index=14>hey there - I'm connected to Elixir :)
+</span><span class="fragment" data-fragment-index=15>cool!
+</span><span class="fragment" data-fragment-index=16>cool!
+</span>
+
+            </code></pre>
+          </div>
+          <br/><br/><br/><br/>
+          <div class="side-by-side clearfix">
+            <pre class="left">Elixir</pre>
+            <pre class="right">Console</pre>
+          </div>
+          <div class="side-by-side">
+            <pre class="left"><code class="ruby" data-noescape>
+> <span class="fragment" data-fragment-index=5>iex --sname b3
+Erlang R16B01 (erts-5.10.2) [source] [64-bit] [smp:8:8] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+Interactive Elixir (0.10.0) - press Ctrl+C to exit (type h() ENTER for help)
+iex(b3@bart-mbp)1> </span><span class="fragment" data-fragment-index=6>:net_adm.ping(:'b1@bart-mbp')
+:pong
+iex(b3@bart-mbp)2> </span><span class="fragment" data-fragment-index=7>:erlang.nodes()
+[:"b1@bart-mbp", :"b2@bart-mbp"]
+iex(b3@bart-mbp)3> </span><span class="fragment" data-fragment-index=8>c("ex_server.ex")
+[MyServer]
+iex(b3@bart-mbp)4> </span><span class="fragment" data-fragment-index=9>MyServer.simple_listen(8886)</span>
+            </code></pre>
+            <pre class="right"><code data-noescape>
+> <span class="fragment" data-fragment-index=10>telnet localhost 8887
+Trying ::1...
+telnet: connect to address ::1: Connection refused
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+</span><span class="fragment" data-fragment-index=12>hello from Erlang
+</span><span class="fragment" data-fragment-index=13>hey there - I'm connected to Elixir :)
+</span><span class="fragment" data-fragment-index=14>hey there - I'm connected to Elixir :)
+</span><span class="fragment" data-fragment-index=16>cool!
+</span>
+
+</code></pre>
+          </div>
         </section>
       </section>
 
@@ -1135,6 +1236,9 @@ Hello from <0.36.0>
           
         </section>
         
+        <!-- OTP examples -->
+
+        <!--
         <section>
           <section>
             <h2>OTP in Erlang</h2>
@@ -1145,11 +1249,12 @@ Hello from <0.36.0>
             <h2>OTP in Elixir</h2>
           </section>
         </section>
-
+        -->
       </section>
 
       
       <!-- Tools -->
+      <!--
       <section>
         <section>
           <h2>Testing</h2>
@@ -1158,6 +1263,7 @@ Hello from <0.36.0>
           <h2>Building</h2>
         </section>
       </section>
+      -->
 
       <!-- What is erlang good for? Who is using it? -->
       <section>
@@ -1189,10 +1295,14 @@ Hello from <0.36.0>
 
       <section>
         <h2>Things I didn't talk about</h2>
-        <p>ETS/DETS</p>
-        <p>Mnesia</p>
-        <p>Elixir macros</p>
-        <p>exception handling</p>
+        <p class="fragment">ETS/DETS</p>
+        <p class="fragment">Mnesia</p>
+        <p class="fragment">Elixir macros</p>
+        <p class="fragment">exception handling</p>
+        <p class="fragment">testing</p>
+        <p class="fragment">build tools (rebar, mix)</p>
+        <p class="fragment">quality tools (wrangler, proper, dialyzer, etc)</p>
+        <p class="fragment">examples of OTP in Erlang and Elixir (sorry!)</p>
       </section>
 
       <!-- Thanks -->
@@ -1201,6 +1311,7 @@ Hello from <0.36.0>
         <p>Thanks!</p>
         <p></p>
         <p>Bart Ptaszynski <a href="http://twitter.com/foobarto">@foobarto</a> | <a href="mailto:bart@yazzgoth.com">bart@yazzgoth.com</a></p>
+        <p>Presentation available at <a href="https://github.com/foobarto/presentations">github.com/foobarto/presentations</a></p>
       </section>
     </div>
 
